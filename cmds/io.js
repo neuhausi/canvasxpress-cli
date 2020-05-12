@@ -81,7 +81,7 @@ module.exports = async (cmd, input, output, args) => {
 				    	var conf = config ? JSON.parse(config) : false;
 				    	cx.dataURL = o.input;
 				    	cx.remoteTransitionEffect = 'none';
-				    	cx.getDataFromURL(target, conf, false, false, function(){
+				    	cx.getDataFromURLOrString(target, conf, false, false, function(){
 				  			var cxs = CanvasXpress.instances;
 							 	var cx = cxs[cxs.length - 1];
 							 	var target = cx.target;			 	
