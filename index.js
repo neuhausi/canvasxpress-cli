@@ -28,25 +28,25 @@ module.exports = () => {
 
   let height = args.height || args.y || 800;
 
-  let tmout = args.timeout || args.t || 500;
+  let tmout = args.timeout || args.t || 2500;
 
-  let data = dat ? JSON.parse(dat) : {"y":{"vars":["Variable1"],"smps":["Sample1","Sample2","Sample3"],"data":[[55,44,33]]}};
+  let data = dat ? JSON.parse(dat) : { "y": { "vars": ["Variable1"], "smps": ["Sample1", "Sample2", "Sample3"], "data": [[55, 44, 33]] } };
 
-  let config = conf ? JSON.parse(conf) : {"graphType":"Boxplot","transposeData":true,"asVariableFactors":["dose"],"stringSampleFactors":["dose"],"groupingFactors":["dose"]};
+  let config = conf ? JSON.parse(conf) : { "graphType": "Boxplot", "transposeData": true, "asVariableFactors": ["dose"], "stringSampleFactors": ["dose"], "groupingFactors": ["dose"] };
 
   let obj = {
-    cmd : cmd,
-    input : input,
-    output : output,
-    target : target,
-    data : data,
-    config : config,
-    events : events,
-    debug : debug,
-    width : width,
-    height : height,
-    tmout : tmout,
-    args : args
+    cmd: cmd,
+    input: input,
+    output: output,
+    target: target,
+    data: data,
+    config: config,
+    events: events,
+    debug: debug,
+    width: width,
+    height: height,
+    tmout: tmout,
+    args: args
   }
 
   if (args.version || args.v) {
@@ -92,14 +92,48 @@ module.exports = () => {
       require('./cmds/help')(args);
       break;
     case 'test':
-      obj.cmd = "png";
-      obj.input = "https://canvasxpress.org/examples/bar-1.html"
-      obj.output = "./test/";
-      require('./cmds/io')(obj);
-      obj.cmd = "svg";
-      require('./cmds/io')(obj);
-      obj.cmd = "json";
-      require('./cmds/io')(obj);
+      require('./cmds/io')({
+        cmd: "png",
+        input: "https://www.canvasxpress.org/examples/bar-1.html",
+        output: "./test/",
+        target: false,
+        data: false,
+        config: false,
+        events: events,
+        debug: debug,
+        width: width,
+        height: height,
+        tmout: tmout,
+        args: args
+      });
+      require('./cmds/io')({
+        cmd: "svg",
+        input: "https://www.canvasxpress.org/examples/bar-1.html",
+        output: "./test/",
+        target: false,
+        data: data,
+        config: config,
+        events: events,
+        debug: debug,
+        width: width,
+        height: height,
+        tmout: tmout,
+        args: args
+      });
+      require('./cmds/io')({
+        cmd: "json",
+        input: "https://www.canvasxpress.org/examples/bar-1.html",
+        output: "./test/",
+        target: false,
+        data: data,
+        config: config,
+        events: events,
+        debug: debug,
+        width: width,
+        height: height,
+        tmout: tmout,
+        args: args
+      });
       break;
     default:
       console.error(`"${cmd}" is not a valid command!`);
