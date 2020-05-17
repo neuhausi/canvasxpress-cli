@@ -5,7 +5,7 @@ var canvas = require("canvas");
 var html = '' +
   '<html>' +
   '  <head>' +
-  '    <script type="text/javascript" src="http://localhost:8000/dist/canvasXpress.min.js"></script>' +
+  '    <script type="text/javascript" src="https://www.canvasxpress.org/dist/canvasXpress.min.js"></script>' +
   '    <script>' +
   '      var cx = new CanvasXpress("canvas", {' +
   '        "y" : {' +
