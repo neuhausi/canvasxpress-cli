@@ -1,9 +1,9 @@
 {
   "name": "canvasxpress-cli",
-  "version": "35.1.4",
+  "version": "62.4.0",
   "license": {
-    "type": "GPL-3.0-or-later",
-    "url": "https://www.gnu.org/licenses/gpl.html"
+    "type": "Dual licensing",
+    "url": "https://www.canvasxpress.org/docs/license.html"
   },
   "bin": {
     "canvasxpress": "bin/canvasxpress"
@@ -34,6 +34,6 @@
     "figlet": "^1.2.1",
     "minimist": "^1.2.0",
     "ora": "^3.4.0",
-    "puppeteer": "^1.15.0"
+    "puppeteer": "^13.0.0"
   }
-}  
+}
