@@ -34,6 +34,6 @@
     "figlet": "^1.2.1",
     "minimist": "^1.2.0",
     "ora": "^3.4.0",
-    "puppeteer": "^13.0.0"
+    "playwright": "^1.0.0"
   }
 }

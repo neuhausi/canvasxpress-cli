@@ -2,7 +2,7 @@ const util = require('util');
 const path = require('path');
 const fs = require('fs');
 const ora = require('ora');
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 
 module.exports = async (obj) => {
 
@@ -30,39 +30,31 @@ module.exports = async (obj) => {
 
   try {
 
-    const browser = await puppeteer.launch({
+    const browser = await chromium.launch({
       headless: obj.debug ? false : true,
       devtools: obj.debug ? true : false,
-      executablePath: puppeteer.executablePath(),
-      defaultViewport: {
-        width: 1000,
-        height: 1000
-      },
       args: ['--no-sandbox',
         '--allow-file-access-from-files',
         '--enable-local-file-accesses']
     });
 
-    const page = await browser.newPage();
+    const context = await browser.newContext({
+      viewport: { width: 1000, height: 1000 }
+    });
 
-    // Print All
-    //page.on("console", (consoleObj) => console.log(consoleObj.text()));
+    await context.route('**/*', route => {
+      route.continue({ headers: { ...route.request().headers() } });
+    });
 
-    // Print All except warnings
+    const page = await context.newPage();
+
+    await page.context().setDefaultDownloadDirectory(obj.output);
+
     page.on('console', consoleObj => {
       if (consoleObj.type() !== 'warning') {
-          console.log(consoleObj.text());
+        console.log(consoleObj.text());
       }
     });
-
-    /*
-    // Print only logs
-    page.on('console', consoleObj => {
-      if (consoleObj.type() === 'log') {
-          console.log(consoleObj.text());
-      }
-    });
-    */
 
     if (obj.input && !obj.input.match(/^file|^http/)) {
       obj.input = "file://" + path.resolve(obj.input);
@@ -107,7 +99,7 @@ module.exports = async (obj) => {
               cx.dataURL = obj.input;
               cx.remoteTransitionEffect = 'none';
               cx.getDataFromURLOrString(obj.target || cx.target, obj.config, false, false, clbk);
-            } else {        
+            } else {
               console.log("Creating " + (obj.cmd == 'csv' ? 'png' : obj.cmd) + " file from " + (obj.input ? obj.input : 'input data') + " (" + obj.output + (obj.target || cx.target) + "." + obj.cmd + ")");
               exec(cx, obj.target || cx.target);
             }
@@ -128,25 +120,37 @@ module.exports = async (obj) => {
       }
     }
 
-    await page._client.send('Page.setDownloadBehavior', {
-      behavior: 'allow',
-      downloadPath: obj.output
+    const downloadDir = path.resolve(obj.output);
+    await page.route('**/*', async route => {
+      const response = await route.fetch();
+      const headers = response.headers();
+      if (headers['content-disposition'] && headers['content-disposition'].includes('attachment')) {
+        const buffer = await response.body();
+        const disposition = headers['content-disposition'];
+        const match = disposition.match(/filename="?([^"]+)"?/);
+        const filename = match ? match[1] : 'download';
+        fs.writeFileSync(path.join(downloadDir, filename), buffer);
+        route.abort();
+      } else {
+        route.continue();
+      }
     });
 
-    if (obj.input) {
-      await page.goto(obj.cmd == 'csv' ? defhtml : obj.cmd == 'reproduce' ? obj.input + '?showTransition=false' : obj.input);
-    } else {
-      await page.goto(defhtml);
-    }
+    const targetUrl = obj.input
+      ? (obj.cmd == 'csv' ? defhtml : obj.cmd == 'reproduce' ? obj.input + '?showTransition=false' : obj.input)
+      : defhtml;
 
-    await page.waitFor(() => typeof (CanvasXpress) !== undefined && CanvasXpress.ready);
+    await page.goto(targetUrl, { waitUntil: 'networkidle' });
+
+    await page.waitForFunction(() => typeof CanvasXpress !== 'undefined' && CanvasXpress.ready);
 
     await page.evaluate(`(${func.toString()})(${JSON.stringify(obj)})`);
 
-    await setTimeout(() => {
-      browser.close();
-      spinner.stop();
-    }, obj.cmd == 'csv' || obj.cmd == 'reproduce' ? obj.tmout + 2500 : obj.tmout);
+    const delay = obj.cmd == 'csv' || obj.cmd == 'reproduce' ? obj.tmout + 2500 : obj.tmout;
+    await page.waitForTimeout(delay);
+
+    await browser.close();
+    spinner.stop();
 
   } catch (err) {
 
