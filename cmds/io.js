@@ -42,13 +42,13 @@ module.exports = async (obj) => {
       viewport: { width: 1000, height: 1000 }
     });
 
-    await context.route('**/*', route => {
-      route.continue({ headers: { ...route.request().headers() } });
-    });
-
     const page = await context.newPage();
 
-    await page.context().setDefaultDownloadDirectory(obj.output);
+    const downloadDir = path.resolve(obj.output);
+    const downloads = [];
+    page.on('download', (dl) => {
+      downloads.push(dl.saveAs(path.join(downloadDir, dl.suggestedFilename())));
+    });
 
     page.on('console', consoleObj => {
       if (consoleObj.type() !== 'warning') {
@@ -120,34 +120,29 @@ module.exports = async (obj) => {
       }
     }
 
-    const downloadDir = path.resolve(obj.output);
-    await page.route('**/*', async route => {
-      const response = await route.fetch();
-      const headers = response.headers();
-      if (headers['content-disposition'] && headers['content-disposition'].includes('attachment')) {
-        const buffer = await response.body();
-        const disposition = headers['content-disposition'];
-        const match = disposition.match(/filename="?([^"]+)"?/);
-        const filename = match ? match[1] : 'download';
-        fs.writeFileSync(path.join(downloadDir, filename), buffer);
-        route.abort();
-      } else {
-        route.continue();
-      }
-    });
-
     const targetUrl = obj.input
       ? (obj.cmd == 'csv' ? defhtml : obj.cmd == 'reproduce' ? obj.input + '?showTransition=false' : obj.input)
       : defhtml;
 
     await page.goto(targetUrl, { waitUntil: 'networkidle' });
 
-    await page.waitForFunction(() => typeof CanvasXpress !== 'undefined' && CanvasXpress.ready);
+    await page.waitForFunction(() => typeof CanvasXpress !== 'undefined');
+
+    // Create a CX instance if one doesn't already exist (onReady in template
+    // has a circular dependency that prevents auto-instantiation in headless)
+    await page.evaluate(() => {
+      if (!CanvasXpress.instances || CanvasXpress.instances.length === 0) {
+        new CanvasXpress("cX", {y:{vars:["V"],smps:["S"],data:[[0]]}}, {});
+      }
+    });
+    await page.waitForFunction(() => CanvasXpress.ready);
 
     await page.evaluate(`(${func.toString()})(${JSON.stringify(obj)})`);
 
     const delay = obj.cmd == 'csv' || obj.cmd == 'reproduce' ? obj.tmout + 2500 : obj.tmout;
     await page.waitForTimeout(delay);
+
+    await Promise.all(downloads);
 
     await browser.close();
     spinner.stop();
