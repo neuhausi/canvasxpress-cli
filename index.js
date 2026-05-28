@@ -14,7 +14,7 @@ module.exports = () => {
 
   let output = args.output || args.o || "./";
 
-  let target = args.target || args.t || false;
+  let target = args.target || false;
 
   let dat = args.data || args.d || false;
 
