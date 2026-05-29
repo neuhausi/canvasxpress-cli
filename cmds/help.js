@@ -22,7 +22,7 @@ const menus = {
     --graph, -g ........ [optional] graph name
     --number, -n ....... [optional] number for the graph
     --timeout, -t ...... [optional] timeout in millisecods to close browser
-                         {default} 500
+                         {default} 2500
     --browser, -b ...... [optional] boolean to do not run headless and pause for debugging
     
     Examples:
@@ -46,7 +46,7 @@ const menus = {
     --data, -d ......... [optional - required] json string with the data for CanvasXpress
     --config, -c ....... [optional] json string with configuration for CanvasXpress
     --timeout, -t ...... [optional] timeout in millisecods to close browser
-                         {default} 500
+                         {default} 2500
     --browser, -b ...... [optional] boolean to do not run headless and pause for debugging
     
     Examples:
@@ -68,7 +68,7 @@ const menus = {
     --output, -o ....... [optional] directory path to save image
                          {default} './'
     --timeout, -t ...... [optional] timeout in millisecods to close browser
-                         {default} 500
+                         {default} 2500
     --browser, -b ...... [optional] boolean to do not run headless and pause for debugging
     
     Examples:
@@ -92,10 +92,9 @@ const menus = {
     --height, -y ....... [optional] integer for image height
                          {default} 800
     --data, -d ......... [optional - required] json string with the data for CanvasXpress
-    --config, -c ....... [optional] json string with configuration for CanvasXpress    --timeout, -t ...... [optional] timeout in millisecods to close browser
-                         {default} 500
+    --config, -c ....... [optional] json string with configuration for CanvasXpress
     --timeout, -t ...... [optional] timeout in millisecods to close browser
-                         {default} 500
+                         {default} 2500
     --browser, -b ...... [optional] boolean to do not run headless and pause for debugging
     
     Examples:
@@ -124,7 +123,7 @@ const menus = {
     --data, -d ......... [optional - required] json string with the data for CanvasXpress
     --config, -c ....... [optional] json string with configuration for CanvasXpress
     --timeout, -t ...... [optional] timeout in millisecods to close browser
-                         {default} 500
+                         {default} 2500
     --browser, -b ...... [optional] boolean to do not run headless and pause for debugging
     
     Examples:
@@ -153,7 +152,7 @@ const menus = {
     --data, -d ......... [optional - required] json string with the data for CanvasXpress
     --config, -c ....... [optional] json string with configuration for CanvasXpress
     --timeout, -t ...... [optional] timeout in millisecods to close browser
-                         {default} 500
+                         {default} 2500
     --browser, -b ...... [optional] boolean to do not run headless and pause for debugging
     
     Examples:
