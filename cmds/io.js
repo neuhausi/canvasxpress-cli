@@ -6,7 +6,10 @@ const { chromium } = require('playwright');
 
 module.exports = async (obj) => {
 
-  const dirname = process.argv[1].replace('/bin/canvasxpress', '');
+  // Package root (node-cli/), where logs/ and src/ live. Derived from this file's
+  // location (cmds/) so it is correct under global installs and on Windows, where
+  // the previous argv[1] string-replace of '/bin/canvasxpress' broke.
+  const dirname = path.join(__dirname, '..');
 
   const today = new Date().toISOString().replace('-', '').split('T')[0].replace('-', '');
 
@@ -150,6 +153,8 @@ module.exports = async (obj) => {
   } catch (err) {
 
     console.error(err);
+    // Report failure to the shell so CI/scripts can detect a failed render.
+    process.exitCode = 1;
 
   }
 
