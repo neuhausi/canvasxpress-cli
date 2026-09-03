@@ -1,10 +1,7 @@
 {
   "name": "canvasxpress-cli",
-  "version": "67.5.0",
-  "license": {
-    "type": "Dual licensing",
-    "url": "https://www.canvasxpress.org/license.html"
-  },
+  "version": "67.6.0",
+  "license": "SEE LICENSE IN LICENSE",
   "bin": {
     "canvasxpress": "bin/canvasxpress"
   },
