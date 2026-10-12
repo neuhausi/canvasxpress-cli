@@ -1,6 +1,6 @@
 {
   "name": "canvasxpress-cli",
-  "version": "71.3.1",
+  "version": "71.3.2",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
     "canvasxpress": "bin/canvasxpress"
